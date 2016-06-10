@@ -12,4 +12,8 @@ class FlyersController extends Controller
     {
     return view('flyers.create');
     }
+    public function store(Request $request)
+    {
+
+    }
 }
