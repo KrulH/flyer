@@ -10,6 +10,11 @@ use App\Http\Requests;
 
 class FlyersController extends Controller
 {
+    public function show($zip, $street)
+    {
+        $flyer = Flyer::locatedAt($zip, $street)->first();
+        return view('flyers.show',compact('flyer'));
+    }
     public function create()
     {
         //flash('Hello World', 'This is the message');

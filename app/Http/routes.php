@@ -15,3 +15,4 @@ Route::get('/', function () {
     return view('pages.home');
 });
 Route::Resource('flyers','FlyersController');
+Route::get('{zip}/{street}','FlyersController@show');
