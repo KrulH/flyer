@@ -15,6 +15,19 @@ class FlyersController extends Controller
         $flyer = Flyer::locatedAt($zip, $street)->first();
         return view('flyers.show',compact('flyer'));
     }
+    public function addPhoto($zip, $street,Request $request)
+    {
+
+        $this->validate($request, [
+            'photo' =>  'required|mimes:jpg,jpeg,png,bmp'
+        ]);
+         $file = $request->file('photo');
+        $name = time().$file->getClientOriginalName();
+        $file->move('flyer/photos',$name);
+        $flyer = Flyer::locatedAt($zip, $street)->first();
+        $flyer->photos()->create(['path' => "/flyer/photos/{$name}"]);
+        return 'Done';
+    }
     public function create()
     {
         //flash('Hello World', 'This is the message');
