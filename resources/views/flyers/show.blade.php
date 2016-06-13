@@ -5,15 +5,21 @@
         <div class="col-md-3">
             <h1>{{ $flyer->street }}</h1>
             <h1>{!! $flyer->price !!}</h1>
+            <hr>
+            <div class="description">
+                <p>{!! nl2br($flyer->description) !!}</p>
+            </div>
         </div>
         <div class="col-md-9">
             @foreach($flyer->photos as $photo)
-                <img src="{{ $photo->path }}" >
+                <img src="/{{ $photo->path }}" >
             @endforeach
         </div>
     </div>
 
     <hr>
+
+    <h2>Add Photos</h2>
 
     <form id="addPhotosForm"
             action="/{{ $flyer->zip }}/{{ $flyer->street }}/photos"
