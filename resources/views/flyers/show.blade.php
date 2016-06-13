@@ -22,10 +22,11 @@
     <h2>Add Photos</h2>
 
     <form id="addPhotosForm"
-            action="/{{ $flyer->zip }}/{{ $flyer->street }}/photos"
-            method="POST"
-            class="dropzone"
-            id="my-awesome-dropzone">
+          action="{{ route('store_photo_path', [$flyer->zip,$flyer->street]) }}"
+          method="POST"
+          class="dropzone"
+          id="my-awesome-dropzone"
+            >
         {{ csrf_field() }}
     </form>
 @stop
