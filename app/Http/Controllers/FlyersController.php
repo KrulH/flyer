@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Flyer;
 use App\Photo;
 use App\Http\Requests\FlyerRequest;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+
 
 class FlyersController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth',['except' => ['show']]);
     }
     public function show($zip, $street)
     {
@@ -22,18 +24,20 @@ class FlyersController extends Controller
     }
     public function addPhoto($zip, $street,Request $request)
     {
-
         $this->validate($request, [
             'photo' =>  'required|mimes:jpg,jpeg,png,bmp'
         ]);
-        $photo = Photo::fromForm($request->file('photo'));
+        $photo= $this->makePhoto($request->file('photo'));
         Flyer::locatedAt($zip, $street)->addPhoto($photo);
-        return 'Done';
+    }
+    protected function makePhoto(UploadedFile $file)
+    {
+        return Photo::named($file->getClientOriginalName())
+            ->move($file);  // store idi
 
     }
     public function create()
     {
-        //flash('Hello World', 'This is the message');
         return view('flyers.create');
     }
     public function store(FlyerRequest $request)
