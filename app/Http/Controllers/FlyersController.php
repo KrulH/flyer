@@ -16,6 +16,7 @@ class FlyersController extends Controller
     public function __construct()
     {
         $this->middleware('auth',['except' => ['show']]);
+        parent::__construct();
     }
     public function show($zip, $street)
     {
@@ -34,7 +35,6 @@ class FlyersController extends Controller
     {
         return Photo::named($file->getClientOriginalName())
             ->move($file);  // store idi
-
     }
     public function create()
     {
