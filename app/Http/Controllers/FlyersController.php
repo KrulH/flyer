@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Auth;
 
 
 class FlyersController extends Controller
@@ -28,8 +29,18 @@ class FlyersController extends Controller
         $this->validate($request, [
             'photo' =>  'required|mimes:jpg,jpeg,png,bmp'
         ]);
+        $flyer = Flyer::locatedAt($zip, $street);
+        if($flyer->user_id !== Auth::id())
+        {
+            if($request->ajax())
+            {
+                return response(['message' => 'No way.'],403);
+            }
+            flash('No way');
+            return redirect('/');
+        }
         $photo= $this->makePhoto($request->file('photo'));
-        Flyer::locatedAt($zip, $street)->addPhoto($photo);
+        $flyer->addPhoto($photo);
     }
     protected function makePhoto(UploadedFile $file)
     {
