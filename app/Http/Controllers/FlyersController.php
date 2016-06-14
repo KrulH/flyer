@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Flyer;
+use App\Http\Requests\ChangeFlyerRequest;
 use App\Photo;
 use App\Http\Requests\FlyerRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -24,24 +25,12 @@ class FlyersController extends Controller
         $flyer = Flyer::locatedAt($zip, $street);
         return view('flyers.show',compact('flyer'));
     }
-    public function addPhoto($zip, $street,Request $request)
+    public function addPhoto($zip, $street,ChangeFlyerRequest $request)
     {
-        $this->validate($request, [
-            'photo' =>  'required|mimes:jpg,jpeg,png,bmp'
-        ]);
-        $flyer = Flyer::locatedAt($zip, $street);
-        if($flyer->user_id !== Auth::id())
-        {
-            if($request->ajax())
-            {
-                return response(['message' => 'No way.'],403);
-            }
-            flash('No way');
-            return redirect('/');
-        }
         $photo= $this->makePhoto($request->file('photo'));
-        $flyer->addPhoto($photo);
+        Flyer::locatedAt($zip, $street)->addPhoto($photo);
     }
+
     protected function makePhoto(UploadedFile $file)
     {
         return Photo::named($file->getClientOriginalName())

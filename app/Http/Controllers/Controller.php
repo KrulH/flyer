@@ -16,5 +16,6 @@ class Controller extends BaseController
     {
         view()->share('signedIn', Auth::check());
         view()->share('user', Auth::user());
+
     }
 }
