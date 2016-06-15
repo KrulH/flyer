@@ -33,8 +33,8 @@ class FlyersController extends Controller
 
     protected function makePhoto(UploadedFile $file)
     {
-        return Photo::named($file->getClientOriginalName())
-            ->move($file);  // store idi
+        return Photo::named($file->getClientOriginalName())->move($file);
+              // store idi
     }
     public function create()
     {
