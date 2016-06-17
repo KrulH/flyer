@@ -2,49 +2,99 @@
 
 namespace App\Http\Controllers;
 
-use App\Flyer;
+
 use App\Http\Requests\ChangeFlyerRequest;
 use App\Photo;
 use App\Http\Requests\FlyerRequest;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
+use App\Flyer;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+
 
 
 class FlyersController extends Controller
 {
+
     public function __construct()
     {
-        $this->middleware('auth',['except' => ['show']]);
+        $this->middleware('auth', ['except' => ['show']]);
+
         parent::__construct();
     }
-    public function show($zip, $street)
+
+    public function index()
     {
-        $flyer = Flyer::locatedAt($zip, $street);
-        return view('flyers.show',compact('flyer'));
-    }
-    public function addPhoto($zip, $street,ChangeFlyerRequest $request)
-    {
-//        $photo= $this->makePhoto($request->file('photo'));
-        $photo = Photo::fromFile($request->file('photo'));
-        Flyer::locatedAt($zip, $street)->addPhoto($photo);
+        $flyers = Flyer::latest('id')->get();
+
+        return view('flyers.index', compact('flyers'));
     }
 
-//    protected function makePhoto(UploadedFile $file)
-//    {
-//        return Photo::named($file->getClientOriginalName())->move($file);
-//              // store idi
-//    }
+
     public function create()
     {
         return view('flyers.create');
     }
+
+
     public function store(FlyerRequest $request)
     {
-       $flyer = $this->user->publish(new Flyer($request->all()));
-        flash()->success('Success!' , 'Your Flyer has been created');
-        return redirect(flyer_path($flyer));
+
+
+       $flyer = $this->user->publish(
+           		new Flyer($request->all ())
+            		);
+
+        return redirect($flyer->zip.'/'.str_replace(' ', '-', $flyer->street));
+    }
+
+
+    public function show($zip, $street)
+    {
+
+
+        $flyer = Flyer::locatedAt($zip, $street);
+
+        return view('flyers.show', compact('flyer'));
+
+    }
+
+
+
+
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
     }
 }

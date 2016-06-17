@@ -2,80 +2,33 @@
 
 namespace App;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Image;
 use Illuminate\Database\Eloquent\Model;
-use Intervention\Image\Facades\Image;
-
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Photo extends Model
 {
+    protected $table = 'flyer_photos'; // tablo normalde modelin sonuna s getirilmiş
+    // hali oluyor bunu değiştirmek için eklendi bu
 
-    protected $table = 'flyer_photos';
-    protected $fillable = ['path','name','thumbnail_path'];
-    protected $file;
-    protected static function boot()
-    {
-        static::creating(function($photo){
-           return $photo->upload();
-        });
-    }
+    protected $fillable = ['path', 'name', 'thumbnail_path'];
+
     public function flyer()
     {
         return $this->belongsTo('App\Flyer');
     }
-    public static function fromFile(UploadedFile $file)
-    {
-        $photo = new static;
-        $photo->file = $file;
-        return $photo->fill([
-            'name'  => $photo->fileName(),
-            'path'  => $photo->filePath(),
-            'thumbnail_path'    => $photo->thumbnailPath()
-        ]);
-    }
-    public function fileName()
-    {
-        $name = sha1(time(). $this->file->getClientOriginalName());
-        $extension = $this->file->getClientOriginalExtension();
-        return "{$name}.{$extension}";
-    }
-    public function filePath()
-    {
-        return $this->baseDir() . '/' . $this->fileName();
-    }
-    public function thumbnailPath()
-    {
-        return $this->baseDir() . '/tn-' . $this->fileName();
-    }
+
     public function baseDir()
     {
-        return 'flyer/photos';
+        return 'images/photos';
     }
-    public static function named($name)
+    public function setNameAttribute($name)
     {
-//        $photo = new static;
-//        return $photo->saveAs($name);
-        return (new static)->saveAs($name);
+        $this->attributes['name'] = $name; // $photo->name = 'new.jpg';
+        $this->path = $this->baseDir().'/'. $name;
+        $this->thumbnail_path = $this->baseDir().'/tn-'. $name;
+    }
 
-    }
-//    public function saveAs($name)
-//    {
-//        $this->name = sprintf("%s-%s", time(),$name);
-//        $this->path = sprintf("%s/%s", $this->baseDir, $this->name);
-//        $this->thumbnail_path = sprintf("%s/tn-%s", $this->baseDir, $this->name);
-//        return $this;
-//
-//    }
-    public function upload() // store
-    {
-       $this->file->move($this->baseDir() ,$this->fileName());
-        $this->makeThumbnail();
-        return $this;
-    }
-    public function makeThumbnail()
-    {
-        Image::make($this->filePath())
-            ->fit(200)
-            ->save($this->thumbnailPath());
-    }
+
+
 }
