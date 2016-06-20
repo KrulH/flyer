@@ -15,7 +15,9 @@
                 <div class="row">
                     @foreach($set as $photo)
                         <div class="col-md-3 gallery_image">
-                            <img src="/{{ $photo->thumbnail_path }}" alt="">
+                            <a href="/{{ $photo->path }}" data-lity>
+                                <img src="/{{ $photo->thumbnail_path }}" alt="">
+                            </a>
                         </div>
                     @endforeach
                 </div>
@@ -26,7 +28,7 @@
     <hr>
 
     @if($user && $user->owns($flyer))
-    <h2>Add Photos</h2>
+        <h2>Add Photos</h2>
         <form id="addPhotosForm"
               action="{{ route('store_photo_path', [$flyer->zip,$flyer->street]) }}"
               method="POST"
